@@ -4,13 +4,15 @@
 #include "socialclub.hpp"
 #include "startmode.hpp"
 
-MYMODCFG(net.deviceblack.fastboot, FastBoot, 3.0.2.4, DeviceBlack);
+MYMODCFG(net.deviceblack.fastboot, FastBoot, 3.1.0.5, DeviceBlack);
 NEEDGAME(com.rockstargames.gtasa)
 
 uintptr_t g_pLibSCAnd = 0;
 uintptr_t g_pLibGTASA = 0;
 
 bool removeSocialClub = true;
+bool showVersion = true;
+
 char startMode[16];
 char slotList[128];
 
@@ -19,7 +21,9 @@ ON_MOD_PRELOAD()
 	g_pLibSCAnd = aml->GetLib("libSCAnd.so");
 	g_pLibGTASA = aml->GetLib("libGTASA.so");
 
-	removeSocialClub = cfg->GetBool("Remove Social Club", true);
+	removeSocialClub = cfg->GetBool("Remove Social Club", removeSocialClub);
+	showVersion = cfg->GetBool("Show Version", showVersion);
+	
 	cfg->GetString(startMode, sizeof(startMode), "Start Mode", "auto");
 	cfg->GetString(slotList, sizeof(slotList), "Slot List", "GTASAsf10.b GTASAsf9.b");
 
@@ -40,6 +44,7 @@ DECL_HOOK(void, MainMenuScreen_Update, void* self, float dt)
 
 	static const bool once = [&self, dt] {
 		jobject instance = aml->InjectSmaliDEX(classes_dex, classes_dex_len, "net.deviceblack.fastboot.ForceFullScreen");
+		CallJavaMethod<void>(instance, "enableFullScreen", "(Z)V", showVersion ? JNI_TRUE : JNI_FALSE);
 		aml->GetJNIEnvironment()->DeleteGlobalRef(instance);
 
 		MenuEntryPoint(self, dt); // startmode.cpp

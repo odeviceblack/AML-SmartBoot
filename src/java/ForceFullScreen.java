@@ -10,12 +10,14 @@ import com.rockstargames.gtasa.GTASA;
 
 public class ForceFullScreen
 {
+	private GTASA game = null;
+
 	public ForceFullScreen()
 	{
-		enableFullScreen(GTASA.gtasaSelf);
+		game = GTASA.gtasaSelf;
 	}
 
-	public void enableFullScreen(GTASA game)
+	public void enableFullScreen(boolean showVersion)
 	{
 		game.runOnUiThread(() -> {
 			game.getWindow().addFlags(
@@ -36,7 +38,8 @@ public class ForceFullScreen
 				);
 			}
 
-			Toast.makeText(game, "FastBoot v3.x © DeviceBlack", Toast.LENGTH_LONG).show();
+			if(showVersion)
+				Toast.makeText(game, "FastBoot © DeviceBlack", Toast.LENGTH_LONG).show();
 		});
 	}
 }
